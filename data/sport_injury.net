@@ -1,0 +1,144 @@
+
+net {
+  name = SportInjury;
+  software = "aGrUM 2.1.1";
+  node_size = (50 50);
+}
+
+node Injury {
+   states = (Yes No );
+   label = "Injury";
+   ID = "Injury";
+}
+
+node Age {
+   states = (younger_than_12 12_up_to_20 20_up_to_35 older_than_35 );
+   label = "Age";
+   ID = "Age";
+}
+
+node Training_intensity {
+   states = (High Low );
+   label = "Training_intensity";
+   ID = "Training_intensity";
+}
+
+node Training_frequency {
+   states = (up_till_3_per_week more_than_3_per_week );
+   label = "Training_frequency";
+   ID = "Training_frequency";
+}
+
+node Too_much_training_causing_exhaustion {
+   states = (Yes No );
+   label = "Too_much_training_causing_exhaustion";
+   ID = "Too_much_training_causing_exhaustion";
+}
+
+node Required_recovery_time {
+   states = (Short Long );
+   label = "Required_recovery_time";
+   ID = "Required_recovery_time";
+}
+
+node Sleep_quality {
+   states = (Good Poor );
+   label = "Sleep_quality";
+   ID = "Sleep_quality";
+}
+
+node Sleep_quality_causing_exhaustion {
+   states = (Yes No );
+   label = "Sleep_quality_causing_exhaustion";
+   ID = "Sleep_quality_causing_exhaustion";
+}
+
+node Exhaustion {
+   states = (Yes No );
+   label = "Exhaustion";
+   ID = "Exhaustion";
+}
+
+node Too_much_training {
+   states = (Yes No );
+   label = "Too_much_training";
+   ID = "Too_much_training";
+}
+
+potential ( Injury | Age   Training_intensity   Exhaustion   ) {
+   data = 
+   ((((   0.3   0.7)   % Exhaustion=Yes   Training_intensity=High   Age=younger_than_12   
+   (   0.1   0.9))   % Exhaustion=No   Training_intensity=High   Age=younger_than_12   
+   ((   0.1   0.9)   % Exhaustion=Yes   Training_intensity=Low   Age=younger_than_12   
+   (   0.03   0.97)))   % Exhaustion=No   Training_intensity=Low   Age=younger_than_12   
+   (((   0.4   0.6)   % Exhaustion=Yes   Training_intensity=High   Age=12_up_to_20   
+   (   0.2   0.8))   % Exhaustion=No   Training_intensity=High   Age=12_up_to_20   
+   ((   0.2   0.8)   % Exhaustion=Yes   Training_intensity=Low   Age=12_up_to_20   
+   (   0.05   0.95)))   % Exhaustion=No   Training_intensity=Low   Age=12_up_to_20   
+   (((   0.45   0.55)   % Exhaustion=Yes   Training_intensity=High   Age=20_up_to_35   
+   (   0.25   0.75))   % Exhaustion=No   Training_intensity=High   Age=20_up_to_35   
+   ((   0.25   0.75)   % Exhaustion=Yes   Training_intensity=Low   Age=20_up_to_35   
+   (   0.1   0.9)))   % Exhaustion=No   Training_intensity=Low   Age=20_up_to_35   
+   (((   0.55   0.45)   % Exhaustion=Yes   Training_intensity=High   Age=older_than_35   
+   (   0.35   0.65))   % Exhaustion=No   Training_intensity=High   Age=older_than_35   
+   ((   0.35   0.65)   % Exhaustion=Yes   Training_intensity=Low   Age=older_than_35   
+   (   0.15   0.85))));   % Exhaustion=No   Training_intensity=Low   Age=older_than_35   
+}
+
+potential (Age) {
+   data = (  0.45 0.45 0.05 0.05);
+}
+
+potential (Training_intensity) {
+   data = (  0.2 0.8);
+}
+
+potential (Training_frequency) {
+   data = (  0.85 0.15);
+}
+
+potential ( Too_much_training_causing_exhaustion | Too_much_training   ) {
+   data = 
+   ((   0.95   0.05)   % Too_much_training=Yes   
+   (   0.05   0.95));   % Too_much_training=No   
+}
+
+potential ( Required_recovery_time | Age   Training_intensity   ) {
+   data = 
+   (((   0.8   0.2)   % Training_intensity=High   Age=younger_than_12   
+   (   0.95   0.05))   % Training_intensity=Low   Age=younger_than_12   
+   ((   0.75   0.25)   % Training_intensity=High   Age=12_up_to_20   
+   (   0.9   0.1))   % Training_intensity=Low   Age=12_up_to_20   
+   ((   0.7   0.3)   % Training_intensity=High   Age=20_up_to_35   
+   (   0.85   0.15))   % Training_intensity=Low   Age=20_up_to_35   
+   ((   0.6   0.4)   % Training_intensity=High   Age=older_than_35   
+   (   0.75   0.25)));   % Training_intensity=Low   Age=older_than_35   
+}
+
+potential (Sleep_quality) {
+   data = (  0.8 0.2);
+}
+
+potential ( Sleep_quality_causing_exhaustion | Sleep_quality   ) {
+   data = 
+   ((   0.05   0.95)   % Sleep_quality=Good   
+   (   0.95   0.05));   % Sleep_quality=Poor   
+}
+
+potential ( Exhaustion | Sleep_quality_causing_exhaustion   Too_much_training_causing_exhaustion   ) {
+   data = 
+   (((   1   0)   % Too_much_training_causing_exhaustion=Yes   Sleep_quality_causing_exhaustion=Yes   
+   (   1   0))   % Too_much_training_causing_exhaustion=No   Sleep_quality_causing_exhaustion=Yes   
+   ((   1   0)   % Too_much_training_causing_exhaustion=Yes   Sleep_quality_causing_exhaustion=No   
+   (   0   1)));   % Too_much_training_causing_exhaustion=No   Sleep_quality_causing_exhaustion=No   
+}
+
+potential ( Too_much_training | Training_frequency   Required_recovery_time   ) {
+   data = 
+   (((   0.05   0.95)   % Required_recovery_time=Short   Training_frequency=up_till_3_per_week   
+   (   0.05   0.95))   % Required_recovery_time=Long   Training_frequency=up_till_3_per_week   
+   ((   0.05   0.95)   % Required_recovery_time=Short   Training_frequency=more_than_3_per_week   
+   (   0.95   0.05)));   % Required_recovery_time=Long   Training_frequency=more_than_3_per_week   
+}
+
+
